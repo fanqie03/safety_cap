@@ -12,9 +12,10 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_dir', default='/home/mf/datasets/helmet_class')
     parser.add_argument('--output_dir', default='output')
-    parser.add_argument('--batch_size', default=64)
-    parser.add_argument('--epochs', default=100)
-    parser.add_argument('--init_lr', default=0.1)
+    parser.add_argument('--batch_size', default=64, type=int)
+    parser.add_argument('--epochs', default=100, type=int)
+    parser.add_argument('--init_lr', default=0.1, type=float)
+    parser.add_argument('--model', default='simple_net_v2')
 
     return parser.parse_args()
 
@@ -43,12 +44,12 @@ def _main(args):
         subset='validation'
     )
 
-    model = keras.applications.MobileNetV2(
-        input_shape=(112, 112, 3),
-        include_top=False,
-        weights=None,
-        classes=5
-    )
+    # model = keras.applications.MobileNetV2(
+    #     input_shape=(112, 112, 3),
+    #     include_top=False,
+    #     weights=None,
+    #     classes=5
+    # )
     #
     # x = base_model.output
     #
@@ -58,7 +59,7 @@ def _main(args):
 
     # model = keras.Model(inputs=base_model.input, outputs=x)
 
-    # model = simple_net()
+    model = eval(args.model)()
 
     model.compile(
         keras.optimizers.Adam(lr=args.init_lr),
