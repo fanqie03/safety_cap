@@ -6,6 +6,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--video_capture', default=0)
 # parser.add_argument('--video_capture', default='rtsp://192.168.1.70:554/ch1/stream2')
 parser.add_argument('--helmet_model', default='output/autosave_simple_net.h5')
+parser.add_argument('--helmet_classes', default='output/classes.json')
 parser.add_argument('--image_size', default=112)
 
 args = parser.parse_args()

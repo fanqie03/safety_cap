@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 from mtcnn.mtcnn import MTCNN
 import cv2
+import json
 
 import tools
 
@@ -39,6 +40,9 @@ class FaceDetector:
 class HelmetDetector:
     def __init__(self, args):
         self.args = args
+        with open(args.helmet_classes, 'r') as f:
+            j = json.load(f)
+            self.classes = dict(zip(j.values(), j.keys()))
         self.model = keras.models.load_model(args.helmet_model, compile=False)
 
     def __call__(self, faces, *args, **kwargs):
@@ -52,5 +56,6 @@ class HelmetDetector:
             img = np.expand_dims(img, 0)
             ret = self.model.predict(img)
             index = np.argmax(ret)
+            type = self.classes[index]
 
-            face.helmet_type = index
+            face.helmet_type = type
