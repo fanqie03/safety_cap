@@ -20,10 +20,10 @@ data_gen = keras.preprocessing.image.ImageDataGenerator(
     horizontal_flip=True,
     validation_split=0.1,
     rotation_range=20,
-    width_shift_range=0.1,
-    height_shift_range=0.1,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
     zoom_range=0.1,
-    # brightness_range=[-0.1, 0.1],
+    brightness_range=[0.8, 1.2],
 )
 train_generator = data_gen.flow_from_directory(
     directory=args.data_dir,
