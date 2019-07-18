@@ -14,8 +14,9 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--input_dir', default='/home/mf/datasets/helmet')
     parser.add_argument('--output_dir', default='/home/mf/datasets/helmet_output')
-    parser.add_argument('--img_size', default=112)
+    parser.add_argument('--image_size', default=112)
     parser.add_argument('--margin', default=600)
+    parser.add_argument('--confidence', default=0.9)
     return parser.parse_args()
 
 
@@ -27,10 +28,10 @@ def check_dir(path):
 def crop_with_margin(img, det, margin, image_size):
     img_size = np.asarray(img.shape)[0:2]
     bb = np.zeros(4, dtype=np.int32)
-    bb[0] = np.maximum(det[0] - margin / 2, 0)
-    bb[1] = np.maximum(det[1] - margin / 2, 0)
-    bb[2] = np.minimum(det[2] + det[0] + margin / 2, img_size[1])
-    bb[3] = np.minimum(det[3] + det[1] + margin / 2, img_size[0])
+    bb[0] = np.maximum(det[0] - det[2], 0)
+    bb[1] = np.maximum(det[1] - det[3], 0)
+    bb[2] = np.minimum(det[2] + det[0] * 2, img_size[1])
+    bb[3] = np.minimum(det[3] + det[1] * 2, img_size[0])
     cropped = img[bb[1]:bb[3], bb[0]:bb[2], :]
     scaled = misc.imresize(cropped, (image_size, image_size), interp='bilinear')
     return scaled
@@ -69,11 +70,13 @@ if __name__ == '__main__':
             for face in faces:
                 box = face['box']
                 confidence = face['confidence']
-                file_name = '{:.4f}-{:.4f}.jpg'.format(random.random(), confidence)
+                if confidence < args.confidence:
+                    continue
+                file_name = '{:.6f}-{:.4f}.jpg'.format(random.random(), confidence)
                 output_file = os.path.join(output_path, file_name)
 
                 # img_size = [args.img_size, args.img_size]
-                img = crop_with_margin(frame, box, margin=args.margin, image_size=args.img_size)
+                img = crop_with_margin(frame, box, margin=args.margin, image_size=args.image_size)
 
                 cv2.imwrite(output_file, img)
 
