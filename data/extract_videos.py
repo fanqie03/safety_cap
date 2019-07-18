@@ -8,6 +8,7 @@ import random
 import numpy as np
 import nltk
 from scipy import misc
+from tools import *
 
 
 def get_args():
@@ -17,24 +18,14 @@ def get_args():
     parser.add_argument('--image_size', default=112)
     parser.add_argument('--margin', default=600)
     parser.add_argument('--confidence', default=0.9)
+    parser.add_argument('--rot_k', default=0, type=int)
+    parser.add_argument('--helmet_expands', default=0.5)
     return parser.parse_args()
 
 
 def check_dir(path):
     if not os.path.exists(path):
         os.makedirs(path)
-
-
-def crop_with_margin(img, det, margin, image_size):
-    img_size = np.asarray(img.shape)[0:2]
-    bb = np.zeros(4, dtype=np.int32)
-    bb[0] = np.maximum(det[0] - det[2], 0)
-    bb[1] = np.maximum(det[1] - det[3], 0)
-    bb[2] = np.minimum(det[2] + det[0] * 2, img_size[1])
-    bb[3] = np.minimum(det[3] + det[1] * 2, img_size[0])
-    cropped = img[bb[1]:bb[3], bb[0]:bb[2], :]
-    scaled = misc.imresize(cropped, (image_size, image_size), interp='bilinear')
-    return scaled
 
 
 if __name__ == '__main__':
@@ -58,7 +49,7 @@ if __name__ == '__main__':
 
         while flag:
 
-            frame = np.rot90(frame, 1)
+            frame = np.rot90(frame, args.rot_k)
 
             # cv2.imshow('1', frame)
 
@@ -76,7 +67,7 @@ if __name__ == '__main__':
                 output_file = os.path.join(output_path, file_name)
 
                 # img_size = [args.img_size, args.img_size]
-                img = crop_with_margin(frame, box, margin=args.margin, image_size=args.image_size)
+                img = crop_with_margin(frame, box, expands=args.helmet_expands, image_size=args.image_size)
 
                 cv2.imwrite(output_file, img)
 

@@ -8,6 +8,7 @@ parser.add_argument('--video_capture', default=0)
 parser.add_argument('--helmet_model', default='output/autosave_simple_net.h5')
 parser.add_argument('--helmet_classes', default='output/classes.json')
 parser.add_argument('--image_size', default=112)
+parser.add_argument('--helmet_expands', default=0.5, type=float)
 
 args = parser.parse_args()
 
@@ -22,12 +23,13 @@ while True:
     faces = face_detector(frame)
     helmet_detector(faces)
 
-    for face in faces:
+    for i, face in enumerate(faces):
         x, y = face.bbox[:2]
         cv2.putText(frame, str(face.helmet_type), (x, y),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 0), thickness=2)
 
-    cv2.imshow('1', frame)
+        cv2.imshow(str(i), face.helmet_face)
+    cv2.imshow('-1', frame)
 
     if cv2.waitKey(1) & 0xff == ord('q'):
         break

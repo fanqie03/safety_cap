@@ -48,7 +48,8 @@ class HelmetDetector:
     def __call__(self, faces, *args, **kwargs):
         for face in faces:
             face.helmet_face = img = tools.crop_with_margin(
-                face.container_image, face.bbox, 0, self.args.image_size
+                face.container_image, face.bbox,
+                self.args.helmet_expands, self.args.image_size
             )
             # TODO bgr or rgb
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
